@@ -11,36 +11,37 @@ var db = {};
 db.mongo = require('mongodb').MongoClient;
 db.mongoURI = 'mongodb://localhost:27017/beaconsBack';
 
-
-
-
-
 app.get('/', function(req, res){
-  // res.sendFile(__dirname + '/home.html');
-
-  db.mongo.connect(db.mongoURI, function(err, dataBase){
-  	dataBase.collection('beacons').update({cellId: 1212121212}, {cellId: 1212121212, beaconId: 21212121212121212}, {upsert: true}, function(err, data){
-  	// dataBase.collection('beacons').insertOne({cellId: 1212121212, beaconId: 98989889}, function(err, data){
-  		if(err) throw err;
-
-  		res.send('beacon atualizado!');
-  		return dataBase.close();
-  	});
-  })
-
-});
+  res.sendFile(__dirname + '/home.html');
+})
 
 app.get('/beacons', function(req, res){
-  // res.sendFile(__dirname + '/home.html');
-
+  
   db.mongo.connect(db.mongoURI, function(err, dataBase){
 
-  	dataBase.collection('beacons').findOne({cellId: 1212121212}, function(err, collInfos) {
-	    return res.send(collInfos);
+    dataBase.collection('beacons').find({}).toArray(function(err, beacons) {
+      return res.send(beacons);
     });
   })
 
-});
+})
+
+app.post('/beacons', function(req, res){
+
+  var cellId = req.body.cellId;
+  var beaconId = req.body.beaconId;
+
+
+  db.mongo.connect(db.mongoURI, function(err, dataBase){
+    dataBase.collection('beacons').update({cellId: cellId}, {cellId: cellId, beaconId: beaconId}, {upsert: true}, function(err, data){
+      if(err) throw err;
+
+      res.send('beacon atualizado!');
+      return dataBase.close();
+    });
+  })
+
+})
 
 // io.on('connection', function(socket){
 //   socket.on('chat message', function(msg){
