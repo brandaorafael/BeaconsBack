@@ -1,5 +1,5 @@
 {
-  "name": "Relampago-Mensageiro",
+  "name": "Beacons Backend",
   "version": "1.0.0",
   "description": "O chat do Marquinhos",
   "main": "index.js",
@@ -13,5 +13,6 @@
     "socket.io": "^1.4.8",
     "mongodb": "^2.0.0",
     "body-parser": "^1.13.3"
-  }
+  },
+  "scripts": {"start": "node index.js"}
 }
