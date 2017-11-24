@@ -55,6 +55,12 @@ app.post('/beacons', function(req, res){
 
 })
 
+app.get('/env', function(req, res){
+
+  return res.json({url: process.env.NOW_URL});
+
+})
+
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
