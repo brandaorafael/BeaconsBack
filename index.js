@@ -3,8 +3,11 @@ var path = require('path');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var bodyParser      = require('body-parser');
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(bodyParser.json());
 
 //Db
 var db = {};
@@ -28,6 +31,8 @@ app.get('/beacons', function(req, res){
 
 app.post('/beacons', function(req, res){
 
+  console.log(req.body);
+
   var cellId = req.body.cellId;
   var beaconId = req.body.beaconId;
 
@@ -36,7 +41,10 @@ app.post('/beacons', function(req, res){
     dataBase.collection('beacons').update({cellId: cellId}, {cellId: cellId, beaconId: beaconId}, {upsert: true}, function(err, data){
       if(err) throw err;
 
-      res.send('beacon atualizado!');
+      res.send(data);
+      
+      io.emit('beacon', {cellId: cellId, beaconId: beaconId});
+
       return dataBase.close();
     });
   })
@@ -44,11 +52,8 @@ app.post('/beacons', function(req, res){
 })
 
 // io.on('connection', function(socket){
-//   socket.on('chat message', function(msg){
+//   socket.on('beacon', function(beacon){
 //     io.emit('chat message', msg);
-//   });
-//   socket.on('mensagem', function(msg){
-//     io.emit('mensagem', msg);
 //   });
 // });
 

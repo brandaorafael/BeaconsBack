@@ -1,0 +1,16 @@
+<html>
+    <body>
+        <table border="1px">
+            <tr>
+                <td>udid</td>
+                <td>beacon</td>
+                <td>localizacao</td>
+            </tr>
+            <tr ng-repeat='beacon in beacons'>
+                <td>{{beacon.cellId}}</td>
+                <td>{{beacon.beaconId}}</td>
+                <td>{{beacon.beaconName}}</td>
+            </tr>
+        </table>
+    </body>
+</html>
