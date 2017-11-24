@@ -1,0 +1,16 @@
+{
+  "name": "Relampago-Mensageiro",
+  "version": "1.0.0",
+  "description": "O chat do Marquinhos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rafael Augusto Brandão (brandaorafael), Bruno Oliveira Arakaki (brunoarakaki)",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.10.2",
+    "socket.io": "^1.4.8",
+    "mongodb": "^2.0.0"
+  }
+}
