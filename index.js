@@ -19,8 +19,8 @@ app.get('/', function(req, res){
   // res.sendFile(__dirname + '/home.html');
 
   db.mongo.connect(db.mongoURI, function(err, dataBase){
-  	// dataBase.collection('beacons').update({cellId: 1212121212}, {beaconId: 09090909090, cellId: 1212121212}, {upsert: true}, function(err, data){
-  	dataBase.collection('beacons').insertOne({cellId: 1212121212, beaconId: 98989889}, function(err, data){
+  	dataBase.collection('beacons').update({cellId: 1212121212}, {cellId: 1212121212, beaconId: 21212121212121212}, {upsert: true}, function(err, data){
+  	// dataBase.collection('beacons').insertOne({cellId: 1212121212, beaconId: 98989889}, function(err, data){
   		if(err) throw err;
 
   		res.send('beacon atualizado!');
@@ -35,9 +35,9 @@ app.get('/beacons', function(req, res){
 
   db.mongo.connect(db.mongoURI, function(err, dataBase){
 
-  	dataBase.collection('beacons').findOne({}, function(err, collInfos) {
+  	dataBase.collection('beacons').findOne({cellId: 1212121212}, function(err, collInfos) {
 	    return res.send(collInfos);
-	});
+    });
   })
 
 });
