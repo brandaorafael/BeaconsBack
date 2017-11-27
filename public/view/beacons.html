@@ -3,18 +3,66 @@
         <table class="table table-dark">
             <thead class="thead-dark">
                 <tr>
-                    <th scope="col">UDID</th>
+                    <th scope="col">Device</th>
                     <th scope="col">Beacon</th>
                     <th scope="col">Localização</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-style="{'background-color': isRiskArea(beacon.beaconId) ? '#f2dede' : ''}" scope="row" ng-repeat='beacon in beacons'>
-                    <td>{{beacon.cellId}}</td>
+                    <td>{{beacon.device}}</td>
                     <td>{{beacon.beaconName}}</td>
                     <td>{{beacon.beaconLocation}}</td>
                 </tr>
             </tbody>
         </table>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" id="bmm-label">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            ×
+                        </button>
+                        <h4 class="modal-title">
+                            Usuários em área de risco
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="alert alert-block alert-danger messages status" ng-repeat='beacon in riskAreasBeacons'>
+                            <a class="close" data-dismiss="alert" href="#">
+                                ×
+                            </a>
+                            <h4 class="element-invisible">
+                                O usuário {{beacon.device}} está no(a) {{beacon.beaconLocation}}
+                            </h4>
+                            <!-- Status message -->
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navbar navbar-default navbar-fixed-bottom">
+            <div class="container">
+                <p class="navbar-text pull-left">
+                    © 2017 - Auxílio na Mobilidade Urbana
+                    <!-- <a href="http://tinyurl.com/tbvalid" target="_blank"> -->
+                        <!-- HTML 5 Validation -->
+                    <!-- </a> -->
+                </p>
+                <button ng-if="riskAreasBeacons.length != 0" type="button" ng-click="showModal()" class="navbar-btn btn-danger btn pull-right">
+                    Usuários em Área de Risco
+                </button>
+            </div>
+        </div>
+
     </body>
 </html>

@@ -54,27 +54,30 @@ angular.module('beacons', ['LocalStorageModule'])
 
                               switch(udid) {
                                     case 'cd2781c8a7fb8f0a':
-                                          return 'Celular Rebeca'
+                                          return 'HTC'
+                                          break;
+                                    case '3d9ed7a09efc0901':
+                                          return 'MOTO G'
                                           break;
                                     default:
                                           return udid
                               }
                         }
 
-                        var riskAreaBeacons = [
-                              '08c7f93ee9697c35749f46413b764712',
+                        var riskAreaBeaconIds = [
+                              '6eeb5a738541d4e99a7cd9dd7acab539',
                               'fa30d761ceca937891b3c0bdf7fbf910',
                               'ed74e21beab9d41e5ee96f54e9d6be2b'
                         ];
 
                         $scope.isRiskArea = function(beaconId){
-                              return riskAreaBeacons.includes(beaconId);
+                              return riskAreaBeaconIds.includes(beaconId);
                         }
+
+                        $scope.riskAreasBeacons = [];
 
                         $http.get('/env')
                         .success(function(data){
-
-                              console.log(data);
 
                               var socket = io.connect(data.url);
 
@@ -82,7 +85,7 @@ angular.module('beacons', ['LocalStorageModule'])
 
                                     var beaconObject = getBeacon(beacon.beaconId);
 
-                                    var beaconHTML = {"cellId": getPhone(beacon.cellId) ,"beaconName": beaconObject.color, "beaconLocation": beaconObject.location, "beaconId": beacon.beaconId};
+                                    var beaconHTML = {"cellId":beacon.cellId, "device": getPhone(beacon.cellId) ,"beaconName": beaconObject.color, "beaconLocation": beaconObject.location, "beaconId": beacon.beaconId};
 
                                     if ($scope.beacons.filter(function(e) {return e.cellId == beacon.cellId}).length == 0) {
                                           $scope.beacons.push(beaconHTML);
@@ -92,6 +95,8 @@ angular.module('beacons', ['LocalStorageModule'])
 
                                           $scope.beacons[index] = beaconHTML;
                                     }
+
+                                    prepareModal();
 
                                     $scope.$apply();
 
@@ -106,12 +111,44 @@ angular.module('beacons', ['LocalStorageModule'])
 
                                     var beaconObject = getBeacon(data[i].beaconId);
 
-                                    var beaconHTML = {"cellId": getPhone(data[i].cellId) ,"beaconName": beaconObject.color, "beaconLocation": beaconObject.location, "beaconId": data[i].beaconId};
+                                    var beaconHTML = {"cellId":data[i].cellId, "device": getPhone(data[i].cellId) ,"beaconName": beaconObject.color, "beaconLocation": beaconObject.location, "beaconId": data[i].beaconId};
 
                                     $scope.beacons.push(beaconHTML);
+
+                                    prepareModal();
                               }
 
                         })
+
+                        $scope.showModal = function(){
+
+                              $('#myModal').modal('show');
+
+                        }
+
+                        var prepareModal = function(){
+
+                              var riskBeaconsAux = [];
+                              var riskBeaconsIdAux = [];
+
+                              $scope.beacons.filter(function(e) {
+
+                                    if(riskAreaBeaconIds.includes(e.beaconId)){
+                                          riskBeaconsIdAux.push(e.cellId);
+                                          riskBeaconsAux.push(e);
+                                    }
+                              });
+
+                              if($scope.riskAreasBeacons.length == 0 || $scope.riskAreasBeacons.filter(function(e) {return riskBeaconsIdAux.includes(e.cellId)}).length == 0){
+                                    $scope.riskAreasBeacons = riskBeaconsAux;
+
+                                    if($scope.riskAreasBeacons.length > 0){
+                                          $('#myModal').modal('show');
+                                    } else {
+                                          $('#myModal').modal('hide');
+                                    }
+                              }
+                        }
                   },
 
       	     templateUrl: 'view/beacons.html'
