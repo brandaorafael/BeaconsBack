@@ -19,31 +19,31 @@ angular.module('beacons', ['LocalStorageModule'])
 
                         	switch(beaconId) {
                         		case '08c7f93ee9697c35749f46413b764712':
-                        			return {color: "Mint", location: "Sala"}
+                        			return {color: "Mint", location: "Entrada"}
                         			break;
                         		case '246d7ead60b351d458d3c4c0887e3a14':
-                        			return {color: "Blueberry", location: "Cozinha"}
+                        			return {color: "Blueberry", location: "Varanda"}
                         			break;
                         		case 'ed74e21beab9d41e5ee96f54e9d6be2b':
-                        			return {color: "Ice", location: "Área de Serviço"}
+                        			return {color: "Ice", location: "Corredor"}
                         			break;
                         		case '0ae1cb5c7677108ec9085f4435085e1d':
-                        			return {color: "Candy 1", location: "Sala de jantar"}
+                        			return {color: "Candy 1", location: "Banheiro Suíte"}
                         			break;
                         		case '0b080cb305bde1b8c504ea1ef2e4fb3c':
-                        			return {color: "Beetroot 1", location: "Banheiro Suíte"}
+                        			return {color: "Beetroot 1", location: "Escritorio"}
                         			break;
                         		case '6639d16f2532af31ec99ecf23a3d0b18':
                         			return {color: "Beetroot 2", location: "Suíte"}
                         			break;
                         		case '6eeb5a738541d4e99a7cd9dd7acab539':
-                        			return {color: "Lemon 1", location: "Banheiro"}
+                        			return {color: "Lemon 1", location: "Cozinha"}
                         			break;
                         		case 'c626263f8573361887f2885363964c1a':
-                        			return {color: "Candy 2", location: "Escritório"}
+                        			return {color: "Candy 2", location: "Banheiro"}
                         			break;
                         		case 'fa30d761ceca937891b3c0bdf7fbf910':
-                        			return {color: "Lemon 2", location: "Varanda"}
+                        			return {color: "Lemon 2", location: "Sala"}
                         			break;
                 				default:
                     				return {color: "??????", location: "??????"}
@@ -65,9 +65,8 @@ angular.module('beacons', ['LocalStorageModule'])
                         }
 
                         var riskAreaBeaconIds = [
-                              '6eeb5a738541d4e99a7cd9dd7acab539',
-                              'fa30d761ceca937891b3c0bdf7fbf910',
-                              'ed74e21beab9d41e5ee96f54e9d6be2b'
+                              '246d7ead60b351d458d3c4c0887e3a14',
+                              '6eeb5a738541d4e99a7cd9dd7acab539'
                         ];
 
                         $scope.isRiskArea = function(beaconId){
@@ -128,26 +127,25 @@ angular.module('beacons', ['LocalStorageModule'])
 
                         var prepareModal = function(){
 
-                              var riskBeaconsAux = [];
-                              var riskBeaconsIdAux = [];
+                              var aux = $scope.beacons.filter(e => $scope.isRiskArea(e.beaconId));
 
-                              $scope.beacons.filter(function(e) {
+                              if($scope.riskAreasBeacons.length == 0 && aux.length > 0){
+                                    $scope.riskAreasBeacons = aux;
 
-                                    if(riskAreaBeaconIds.includes(e.beaconId)){
-                                          riskBeaconsIdAux.push(e.cellId);
-                                          riskBeaconsAux.push(e);
-                                    }
-                              });
-
-                              if($scope.riskAreasBeacons.length == 0 || $scope.riskAreasBeacons.filter(function(e) {return riskBeaconsIdAux.includes(e.cellId)}).length == 0){
-                                    $scope.riskAreasBeacons = riskBeaconsAux;
-
-                                    if($scope.riskAreasBeacons.length > 0){
-                                          $('#myModal').modal('show');
-                                    } else {
-                                          $('#myModal').modal('hide');
-                                    }
+                                    $('#myModal').modal('show');
                               }
+
+                              if(aux.length == 0){
+                                    $scope.riskAreasBeacons = [];
+
+                                    $('#myModal').modal('hide');
+                              } else if(aux.length > $scope.riskAreasBeacons.length){
+                                    $scope.riskAreasBeacons = aux;
+                                    $('#myModal').modal('show');
+                              } else if(aux.length < $scope.riskAreasBeacons.length) {
+                                    $scope.riskAreasBeacons = aux;
+                              }
+
                         }
                   },
 
