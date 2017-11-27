@@ -16,6 +16,8 @@ angular.module('beacons', ['LocalStorageModule'])
                         //$scope variables
                         $scope.beacons = [];
 
+                        $scope.riskAreasBeacons = [];
+
 
                         //local variables
                         var devices = [];
@@ -41,7 +43,14 @@ angular.module('beacons', ['LocalStorageModule'])
 
                                                 var beaconObject = getBeacon(beacon.beaconId);
 
-                                                var beaconHTML = {"cellId":beacon.cellId, "device": getPhone(beacon.cellId) ,"beaconName": beaconObject.name, "beaconLocation": beaconObject.location, "beaconId": beacon.beaconId};
+                                                var beaconHTML = {
+                                                      "cellId":beacon.cellId, 
+                                                      "device": getPhone(beacon.cellId) ,
+                                                      "beaconName": beaconObject.name, 
+                                                      "beaconLocation": beaconObject.location, 
+                                                      "beaconId": beacon.beaconId,
+                                                      "isRiskArea": beaconObject.isRiskArea
+                                                };
 
                                                 if ($scope.beacons.filter(function(e) {return e.cellId == beacon.cellId}).length == 0) {
                                                       $scope.beacons.push(beaconHTML);
@@ -77,7 +86,14 @@ angular.module('beacons', ['LocalStorageModule'])
 
                                                 var beaconObject = getBeacon(dataBeacons[i].beaconId);
 
-                                                var beaconHTML = {"cellId":dataBeacons[i].cellId, "device": getPhone(dataBeacons[i].cellId) ,"beaconName": beaconObject.name, "beaconLocation": beaconObject.location, "beaconId": dataBeacons[i].beaconId};
+                                                var beaconHTML = {
+                                                      "cellId":dataBeacons[i].cellId, 
+                                                      "device": getPhone(dataBeacons[i].cellId) ,
+                                                      "beaconName": beaconObject.name, 
+                                                      "beaconLocation": beaconObject.location, 
+                                                      "beaconId": dataBeacons[i].beaconId,
+                                                      "isRiskArea": beaconObject.isRiskArea
+                                                };
 
                                                 $scope.beacons.push(beaconHTML);
 
@@ -105,40 +121,9 @@ angular.module('beacons', ['LocalStorageModule'])
                               return beacon.length > 0 ? beacon[0]: beaconId;
                         }
 
-
-                        //$scope functions
-                        $scope.showModal = function(){
-
-                              $('#myModal').modal('show');
-
-                        }
-
-      	  		
-
-                        
-
-                        
-
-                        var riskAreaBeaconIds = [
-                              '246d7ead60b351d458d3c4c0887e3a14',
-                              '6eeb5a738541d4e99a7cd9dd7acab539'
-                        ];
-
-                        $scope.isRiskArea = function(beaconId){
-                              return riskAreaBeaconIds.includes(beaconId);
-                        }
-
-                        $scope.riskAreasBeacons = [];
-
-                        
-
-
-
-                        
-
                         var prepareModal = function(){
 
-                              var aux = $scope.beacons.filter(e => $scope.isRiskArea(e.beaconId));
+                              var aux = $scope.beacons.filter(e => e.isRiskArea);
 
                               if($scope.riskAreasBeacons.length == 0 && aux.length > 0){
                                     $scope.riskAreasBeacons = aux;
@@ -158,6 +143,15 @@ angular.module('beacons', ['LocalStorageModule'])
                               }
 
                         }
+
+
+
+                        //$scope functions
+                        $scope.showModal = function(){
+
+                              $('#myModal').modal('show');
+                        }
+                            
                   },
 
       	     templateUrl: 'view/beacons.html'
