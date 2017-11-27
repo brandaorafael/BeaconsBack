@@ -27,7 +27,9 @@ app.get('/beacons', function(req, res){
     if(err) throw err;
 
     dataBase.collection('beacons').find({}).toArray(function(err, beacons) {
-      return res.send(beacons);
+      res.send(beacons);
+
+      return dataBase.close();
     });
   })
 
@@ -58,6 +60,36 @@ app.post('/beacons', function(req, res){
 app.get('/env', function(req, res){
 
   return res.json({url: process.env.NOW_URL});
+
+})
+
+app.get('/devices', function(req, res){
+
+  db.mongo.connect(db.mongoURI, function(err, dataBase){
+
+    if(err) throw err;
+
+    dataBase.collection('devices').find({}).toArray(function(err, devices) {
+      res.send(devices);
+
+      return dataBase.close();
+    });
+  })
+
+})
+
+app.get('/locations', function(req, res){
+
+  db.mongo.connect(db.mongoURI, function(err, dataBase){
+
+    if(err) throw err;
+
+    dataBase.collection('locations').find({}).toArray(function(err, locations) {
+      res.send(locations);
+
+      return dataBase.close();
+    });
+  })
 
 })
 

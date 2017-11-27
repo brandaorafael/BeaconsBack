@@ -9,7 +9,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-style="{'background-color': isRiskArea(beacon.beaconId) ? '#f2dede' : ''}" scope="row" ng-repeat='beacon in beacons'>
+                <tr ng-style="{'background-color': beacon.isRiskArea ? '#f2dede' : ''}" scope="row" ng-repeat='beacon in beacons'>
                     <td>{{beacon.device}}</td>
                     <td>{{beacon.beaconName}}</td>
                     <td>{{beacon.beaconLocation}}</td>
