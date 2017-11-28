@@ -24,6 +24,8 @@ angular.module('beacons', ['LocalStorageModule'])
 
                         var locations = [];
 
+                        //TODO: Fazer os requests encadeados. Estou chamando duas vezes o /devices e o /locations
+
 
                         //$http requests
                         $http.get('/env')
