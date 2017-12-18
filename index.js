@@ -78,6 +78,21 @@ app.get('/devices', function(req, res){
 
 })
 
+app.get('/maps', function(req, res){
+
+  db.mongo.connect(db.mongoURI, function(err, dataBase){
+
+    if(err) throw err;
+
+    dataBase.collection('maps').find({}).toArray(function(err, maps) {
+      res.send(maps);
+
+      return dataBase.close();
+    });
+  })
+
+})
+
 app.get('/locations', function(req, res){
 
   db.mongo.connect(db.mongoURI, function(err, dataBase){

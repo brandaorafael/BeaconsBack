@@ -9,7 +9,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-style="{'background-color': beacon.isRiskArea ? '#f2dede' : ''}" scope="row" ng-repeat='beacon in beacons'>
+                <tr ng-style="{'background-color': beacon.isRiskArea ? '#f2dede' : ''}" scope="row" ng-repeat='beacon in beacons' ng-click="openMap(beacon)">
                     <td>{{beacon.device}}</td>
                     <td>{{beacon.beaconName}}</td>
                     <td>{{beacon.beaconLocation}}</td>
@@ -17,8 +17,8 @@
             </tbody>
         </table>
 
-        <!-- Modal -->
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <!-- Modal Área de Risco-->
+        <div class="modal fade" id="modalRisk" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header" id="bmm-label">
@@ -50,6 +50,25 @@
             </div>
         </div>
 
+        <!-- Modal Mapa-->
+        <div class="modal fade" id="modalMap" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">{{beaconMap.device}} - {{beaconMap.beaconLocation}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <img ng-src="{{imageLink}}" id="imagepreview" style="width: 400px; height: 264px;" >
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="navbar navbar-default navbar-fixed-bottom">
             <div class="container">
                 <p class="navbar-text pull-left">
@@ -58,7 +77,7 @@
                         <!-- HTML 5 Validation -->
                     <!-- </a> -->
                 </p>
-                <button ng-if="riskAreasBeacons.length != 0" type="button" ng-click="showModal()" class="navbar-btn btn-danger btn pull-right">
+                <button ng-if="riskAreasBeacons.length != 0" type="button" ng-click="showModalRisk()" class="navbar-btn btn-danger btn pull-right">
                     Usuários em Área de Risco
                 </button>
             </div>

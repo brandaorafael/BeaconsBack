@@ -5,6 +5,8 @@ angular.module('beacons', ['LocalStorageModule'])
 
 	// $rootScope.api = process.env.NOW_URL;
 
+      $rootScope.loading = true;
+
 }])
 
 .directive('beacons', ["$rootScope", "$http",
@@ -24,87 +26,84 @@ angular.module('beacons', ['LocalStorageModule'])
 
                         var locations = [];
 
-                        //TODO: Fazer os requests encadeados. Estou chamando duas vezes o /devices e o /locations
-
+                        var maps = [];
 
                         //$http requests
                         $http.get('/env')
                         .success(function(data){
-                              $http.get('/devices')
-                              .success(function(dataDevices){
-                                    $http.get('/locations')
-                                    .success(function(dataLocations){
+                              $http.get('/beacons')
+                              .success(function(dataBeacons){
+                                    $http.get('/devices')
+                                    .success(function(dataDevices){
+                                          $http.get('/locations')
+                                          .success(function(dataLocations){
+                                                $http.get('/maps')
+                                                .success(function(dataMaps){
 
-                                          locations = dataLocations;
+                                                      maps = dataMaps;
 
-                                          devices = dataDevices;
+                                                      locations = dataLocations;
 
-                                          var socket = io.connect(data.url);
+                                                      devices = dataDevices;
 
-                                          socket.on('beacon', function(beacon){
+                                                      for(i = 0; i < dataBeacons.length; i++){
 
-                                                var beaconObject = getBeacon(beacon.beaconId);
+                                                            var beaconObject = getBeacon(dataBeacons[i].beaconId);
 
-                                                var beaconHTML = {
-                                                      "cellId":beacon.cellId, 
-                                                      "device": getPhone(beacon.cellId) ,
-                                                      "beaconName": beaconObject.name, 
-                                                      "beaconLocation": beaconObject.location, 
-                                                      "beaconId": beacon.beaconId,
-                                                      "isRiskArea": beaconObject.isRiskArea
-                                                };
+                                                            var beaconHTML = {
+                                                                  "cellId":dataBeacons[i].cellId, 
+                                                                  "device": getPhone(dataBeacons[i].cellId) ,
+                                                                  "beaconName": beaconObject.name, 
+                                                                  "beaconLocation": beaconObject.location, 
+                                                                  "beaconId": dataBeacons[i].beaconId,
+                                                                  "isRiskArea": beaconObject.isRiskArea
+                                                            };
 
-                                                if ($scope.beacons.filter(function(e) {return e.cellId == beacon.cellId}).length == 0) {
-                                                      $scope.beacons.push(beaconHTML);
-                                                } else {
+                                                            $scope.beacons.push(beaconHTML);
 
-                                                      var index = $scope.beacons.map(function(e) { return e.cellId; }).indexOf(beacon.cellId);
+                                                            prepareModal();
+                                                      }
 
-                                                      $scope.beacons[index] = beaconHTML;
-                                                }
+                                                      $rootScope.loading = false;
 
-                                                prepareModal();
+                                                      var socket = io.connect(data.url);
 
-                                                $scope.$apply();
+                                                      socket.on('beacon', function(beacon){
+
+                                                            var beaconObject = getBeacon(beacon.beaconId);
+
+                                                            var beaconHTML = {
+                                                                  "cellId":beacon.cellId, 
+                                                                  "device": getPhone(beacon.cellId) ,
+                                                                  "beaconName": beaconObject.name, 
+                                                                  "beaconLocation": beaconObject.location, 
+                                                                  "beaconId": beacon.beaconId,
+                                                                  "isRiskArea": beaconObject.isRiskArea
+                                                            };
+
+                                                            if ($scope.beacons.filter(function(e) {return e.cellId == beacon.cellId}).length == 0) {
+                                                                  $scope.beacons.push(beaconHTML);
+                                                            } else {
+
+                                                                  var index = $scope.beacons.map(function(e) { return e.cellId; }).indexOf(beacon.cellId);
+
+                                                                  $scope.beacons[index] = beaconHTML;
+                                                            }
+
+                                                            setMap(beaconHTML);
+
+                                                            prepareModal();
+
+                                                            $scope.$apply();
+
+                                                      })
+                                                })
 
                                           })
-
                                     })
                               })
                         })
 
-                        $http.get('/beacons')
-                        .success(function(dataBeacons){
-                              $http.get('/devices')
-                              .success(function(dataDevices){
-                                    $http.get('/locations')
-                                    .success(function(dataLocations){
-
-                                          locations = dataLocations;
-
-                                          devices = dataDevices;
-                              
-                                          for(i = 0; i < dataBeacons.length; i++){
-
-                                                var beaconObject = getBeacon(dataBeacons[i].beaconId);
-
-                                                var beaconHTML = {
-                                                      "cellId":dataBeacons[i].cellId, 
-                                                      "device": getPhone(dataBeacons[i].cellId) ,
-                                                      "beaconName": beaconObject.name, 
-                                                      "beaconLocation": beaconObject.location, 
-                                                      "beaconId": dataBeacons[i].beaconId,
-                                                      "isRiskArea": beaconObject.isRiskArea
-                                                };
-
-                                                $scope.beacons.push(beaconHTML);
-
-                                                prepareModal();
-                                          }
-
-                                    })
-                              })   
-                        })
 
                         //Local functions
                         var getPhone = function(udid){
@@ -123,6 +122,21 @@ angular.module('beacons', ['LocalStorageModule'])
                               return beacon.length > 0 ? beacon[0]: beaconId;
                         }
 
+                        var getMapLink = function(beaconId){
+                              var mapLink = maps
+                              .filter(e => e.beaconId == beaconId);
+
+                              return mapLink.length > 0 ? mapLink[0]: beaconId;
+                        }
+
+                        var setMap = function(beacon){
+
+                              $scope.beaconMap = beacon;
+
+                              $scope.imageLink = getMapLink(beacon.beaconId).url;
+
+                        }
+
                         var prepareModal = function(){
 
                               var aux = $scope.beacons.filter(e => e.isRiskArea);
@@ -130,28 +144,36 @@ angular.module('beacons', ['LocalStorageModule'])
                               if($scope.riskAreasBeacons.length == 0 && aux.length > 0){
                                     $scope.riskAreasBeacons = aux;
 
-                                    $('#myModal').modal('show');
+                                    $scope.showModalRisk();
                               }
 
                               if(aux.length == 0){
                                     $scope.riskAreasBeacons = [];
 
-                                    $('#myModal').modal('hide');
+                                    $('#modalRisk').modal('hide');
                               } else if(aux.length > $scope.riskAreasBeacons.length){
                                     $scope.riskAreasBeacons = aux;
-                                    $('#myModal').modal('show');
+                                    $scope.showModalRisk();
                               } else if(aux.length < $scope.riskAreasBeacons.length) {
+                                    $scope.riskAreasBeacons = aux;
+                              } else {
                                     $scope.riskAreasBeacons = aux;
                               }
 
                         }
 
 
-
                         //$scope functions
-                        $scope.showModal = function(){
+                        $scope.showModalRisk = function(){
 
-                              $('#myModal').modal('show');
+                              $('#modalRisk').modal('show');
+                        }
+
+                        $scope.openMap = function(beacon){
+
+                              setMap(beacon);
+
+                              $('#modalMap').modal('show');
                         }
                             
                   },
